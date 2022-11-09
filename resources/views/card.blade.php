@@ -11,8 +11,6 @@
     <form action="/api/card" id="card" method="post"></form>
     <label for="">RFID номер</label>
     <input id="rfid" type="text" name="rfid" value=""  form="card" readonly>
-    <label for="">QR код</label>
-    <input id="qr" type="text" name="qr_code" form="card" readonly>
     <label for="">Номер карты</label>
     <input id="num" type="text" name="card_number" form="card" readonly>
     <label for="">NFC</label>
@@ -22,9 +20,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        let arr = ["qr", "num", "nfc"]
+        let arr = ["num", "nfc"]
         let interval = setInterval(() => {
             axios.get("http://192.168.31.11:8400/tablerfid:5102:com3")
+            // axios.get("http://127.0.0.1:8400/tablerfid:5102:/dev/ttyUSB0")
                 .then(response => {
                     clearInterval(interval)
                     console.log(response.data)

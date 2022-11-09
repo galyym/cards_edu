@@ -19,7 +19,6 @@ class CardController extends Controller
         $query = DB::table('cards')->updateOrInsert([
             'card_number' => $request->card_number,
             'rfid'        => $request->rfid,
-            'qr_code'     => $request->qr_code,
             'nfc'         => $request->nfc,
         ]);
 

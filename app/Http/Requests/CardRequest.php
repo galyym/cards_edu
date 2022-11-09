@@ -26,7 +26,6 @@ class CardRequest extends FormRequest
         return [
             "card_number" => "required",
             "rfid" => "required",
-            "qr_code" => "required",
             "nfc" => "required"
         ];
     }
