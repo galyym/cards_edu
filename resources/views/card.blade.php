@@ -8,7 +8,7 @@
     <title>Cards</title>
 </head>
 <body>
-    <form action="/api/card" id="card" method="post"></form>
+    <form action="https://cards.edus.kz/api/card" id="card" method="post"></form>
     <label for="">RFID номер</label>
     <input id="rfid" type="text" name="rfid" value=""  form="card" readonly>
     <label for="">Номер карты</label>
