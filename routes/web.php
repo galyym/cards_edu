@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,10 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function (\Illuminate\Http\Request $request) {
-    return view("/");
-});
-
-Route::get('cards', function (){
-    return view('card');
-});
+Route::get('{any}', function () {
+    return view('app');
+})->where('any', '.*');

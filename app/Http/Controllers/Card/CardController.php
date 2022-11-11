@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Card;
 
-use App\Http\Requests\CardRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -16,12 +16,15 @@ class CardController extends Controller
 
         //$request->validated();
 
-        $query = DB::table('cards')->updateOrInsert([
-            'card_number' => $request->card_number,
+        $query = DB::table('cards')->where('card_number', $request->card_number)->update([
             'rfid'        => $request->rfid,
             'nfc'         => $request->nfc,
         ]);
 
-        return response(["message" => "success"]);
+        if ($query){
+            return response("success", 200);
+        }else{
+            return response('error', 500);
+        }
     }
 }

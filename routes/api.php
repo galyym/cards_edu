@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Card\CardController;
+use App\Http\Controllers\Card\CardListController;
+use App\Http\Controllers\Card\GenerateCardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('card', [CardController::class, 'index']);
+Route::get('list', [CardListController::class, 'list']);
+Route::post('generate', [GenerateCardController::class, 'createCard']);
