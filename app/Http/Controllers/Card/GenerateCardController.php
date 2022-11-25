@@ -27,7 +27,7 @@ class GenerateCardController extends Controller
 
         $query = DB::table('cards')->insert($data);
         $last = $this->checkLastNum();
-        if ($end-1 == $last->card_number){
+        if ($end-1 == $last->card_number && $query == true){
             return response('success', 200);
         }
     }
