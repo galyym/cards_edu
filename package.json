@@ -17,14 +17,15 @@
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
         "resolve-url-loader": "^5.0.0",
-        "sass": "^1.32.11",
-        "sass-loader": "^11.0.1",
         "vue": "^2.6.12",
-        "vue-loader": "^15.10.0",
-        "vue-template-compiler": "^2.6.12"
+        "vue-loader": "^15.10.1",
+        "vue-template-compiler": "^2.7.14"
     },
     "dependencies": {
+        "babel-loader": "^9.1.0",
+        "css-loader": "^6.7.2",
         "vue-axios": "^3.5.2",
-        "vue-router": "^3.4.9"
+        "vue-router": "^3.4.9",
+        "vue-style-loader": "^4.1.3"
     }
 }

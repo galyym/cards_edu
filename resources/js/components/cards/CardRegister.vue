@@ -38,22 +38,22 @@ export default {
         getRfid() {
             if (this.interval) return
             this.interval = setInterval(() =>{
-                axios.get("http://192.168.31.121:8400/tablerfid:5102:com3")
+                axios.get("http://192.168.31.67:8400/tablerfid:5102:com3")
                     // axios.get("http://127.0.0.1:8400/tablerfid:5102:/dev/ttyUSB0")
                     .then(response => {
                         console.log(response.data)
                         this.rfid = response.data;
-                        this.stopInterval()
-                        this.cycle()
+                        this.stopInterval();
+                        this.cycle();
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        console.log(error.response);
                     })
             }, 2000)
         },
 
         stopInterval(){
-            clearInterval(this.interval)
+            clearInterval(this.interval);
         },
 
         cycle() {
@@ -62,24 +62,25 @@ export default {
 
         myListener(event) {
             if (event.keyCode === 13) {
-                this.element_id = arr.shift()
+                this.element_id = arr.shift();
                 this.temp = this.tempEl.value;
                 if (this.element_id === "card_number") {
-                    this.card_number = this.temp
+                    this.card_number = this.temp;
                 }
                 if (this.element_id === "nfc") {
-                    this.nfc = this.temp
+                    this.nfc = this.temp;
                 }
 
                 this.tempEl.value = ""
                 this.temp = '';
                 if(arr.length === 0){
-                    this.submitForm()
+                    this.submitForm();
                 }
             }
             event.preventDefault();
         },
 
+        // фокус на temp
         focusMe() {
             this.tempEl.focus();
         },
