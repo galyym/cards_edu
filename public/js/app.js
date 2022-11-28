@@ -2099,7 +2099,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-var arr = ["card_number", "nfc"];
+var arr = ["card_number"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "CardRegister",
   data: function data() {
@@ -2107,7 +2107,6 @@ var arr = ["card_number", "nfc"];
       interval: null,
       temp: null,
       element_id: null,
-      rfid: null,
       card_number: null,
       nfc: null,
       tempEl: null
@@ -2116,29 +2115,14 @@ var arr = ["card_number", "nfc"];
   mounted: function mounted() {
     this.tempEl = document.getElementById("temp");
     this.tempEl.focus();
-    this.getRfid();
+    this.cycle();
   },
   methods: {
-    getRfid: function getRfid() {
-      var _this = this;
-      if (this.interval) return;
-      this.interval = setInterval(function () {
-        axios.get("http://192.168.31.67:8400/tablerfid:5102:com3")
-        // axios.get("http://127.0.0.1:8400/tablerfid:5102:/dev/ttyUSB0")
-        .then(function (response) {
-          console.log(response.data);
-          _this.rfid = response.data;
-          _this.stopInterval();
-          _this.cycle();
-        })["catch"](function (error) {
-          console.log(error.response);
-        });
-      }, 2000);
-    },
-    stopInterval: function stopInterval() {
-      clearInterval(this.interval);
-    },
     cycle: function cycle() {
+      var _this = this;
+      readNFC(40000, 400, function (data) {
+        _this.nfc = data.slice(9, 19);
+      });
       this.tempEl.addEventListener("keyup", this.myListener);
     },
     myListener: function myListener(event) {
@@ -2147,9 +2131,6 @@ var arr = ["card_number", "nfc"];
         this.temp = this.tempEl.value;
         if (this.element_id === "card_number") {
           this.card_number = this.temp;
-        }
-        if (this.element_id === "nfc") {
-          this.nfc = this.temp;
         }
         this.tempEl.value = "";
         this.temp = '';
@@ -2165,25 +2146,17 @@ var arr = ["card_number", "nfc"];
     },
     submitForm: function submitForm() {
       var formData = new FormData();
-      formData.append('rfid', this.rfid);
       formData.append('card_number', this.card_number);
       formData.append('nfc', this.nfc);
       axios.post('/api/card', formData).then(function (response) {
-        // this.success = 'Data saved successfully';
-        // this.response = JSON.stringify(response, null, 2)
         if (response.data === "success") {
           alert("Карта успешно добавлена");
-        } else {
-          alert('Ошибка!');
         }
         location.reload();
+      })["catch"](function (error) {
+        alert('Карта не добавлена ' + error);
+        location.reload();
       });
-      // .catch(error => {
-      //     this.response = 'Error: ' + error.response.status
-      // })
-      // this.name = '';
-      // this.email = '';
-      // this.firstSon = '';
     }
   },
   destroyed: function destroyed() {
@@ -2371,11 +2344,6 @@ var render = function render() {
   }), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", {
-    staticClass: "mt-3",
-    attrs: {
-      "for": ""
-    }
-  }, [_vm._v("RFID номер: " + _vm._s(_vm.rfid))]), _vm._v(" "), _c("br"), _vm._v(" "), _c("label", {
     staticClass: "mt-3",
     attrs: {
       "for": ""

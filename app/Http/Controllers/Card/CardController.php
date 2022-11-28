@@ -17,14 +17,13 @@ class CardController extends Controller
         //$request->validated();
 
         $query = DB::table('cards')->where('card_number', $request->card_number)->update([
-            'rfid'        => $request->rfid,
             'nfc'         => $request->nfc,
         ]);
 
         if ($query){
             return response("success", 200);
         }else{
-            return response('error', 500);
+            return response('error', 400);
         }
     }
 }
