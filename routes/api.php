@@ -29,3 +29,4 @@ Route::get('genpdf/student', [PdfController::class, 'genaratePdfStudent']);
 Route::get('genpdf/teacher', [PdfController::class, 'genaratePdfTeacher']);
 Route::post('gen/pdf', [PdfController::class, 'index']);
 Route::get("test", [PdfController::class, 'getLastNum']);
+Route::get('student/name', [CardController::class, "getSudentName"]);

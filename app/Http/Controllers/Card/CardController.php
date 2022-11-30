@@ -14,16 +14,31 @@ class CardController extends Controller
      */
     public function index(Request $request){
 
-        //$request->validated();
-
-        $query = DB::table('cards')->where('card_number', $request->card_number)->update([
+        $query = DB::table('cards_ready')->where('card_number', $request->card_number)->update([
             'nfc'         => $request->nfc,
+            'qr_code'     => $request->qr_code
         ]);
 
         if ($query){
             return response("success", 200);
         }else{
             return response('error', 400);
+        }
+    }
+
+    public function getSudentName(Request $request){
+        if ($request->card_number != null) {
+            $query = DB::table('cards_ready')->select("full_name")->where("card_number", "=", $request->card_number)->first();
+        }else{
+            return response('Номер карты не найдена', 403);
+        }
+
+        if ($query){
+            return response([
+                "name" => $query->full_name
+            ], 200);
+        }else{
+            return response("К этой карте никто не зарегистрировано", 400);
         }
     }
 }

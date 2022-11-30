@@ -2099,17 +2099,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-var arr = ["card_number"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "CardRegister",
   data: function data() {
     return {
       interval: null,
       temp: null,
-      element_id: null,
       card_number: null,
       nfc: null,
-      tempEl: null
+      tempEl: null,
+      student_name: null
     };
   },
   mounted: function mounted() {
@@ -2119,24 +2118,22 @@ var arr = ["card_number"];
   },
   methods: {
     cycle: function cycle() {
-      var _this = this;
-      readNFC(40000, 400, function (data) {
-        _this.nfc = data.slice(9, 19);
-      });
       this.tempEl.addEventListener("keyup", this.myListener);
     },
     myListener: function myListener(event) {
+      var _this = this;
       if (event.keyCode === 13) {
-        this.element_id = arr.shift();
         this.temp = this.tempEl.value;
-        if (this.element_id === "card_number") {
-          this.card_number = this.temp;
-        }
-        this.tempEl.value = "";
-        this.temp = '';
-        if (arr.length === 0) {
-          this.submitForm();
-        }
+        this.card_number = this.temp;
+        document.getElementById('card_number').value = this.card_number;
+        this.getStudentName();
+        readNFC(60000, 400, function (data) {
+          _this.nfc = data.slice(9, 19);
+          document.getElementById('nfc').value = _this.nfc;
+          _this.tempEl.value = "";
+          _this.temp = '';
+          _this.submitForm();
+        });
       }
       event.preventDefault();
     },
@@ -2145,17 +2142,49 @@ var arr = ["card_number"];
       this.tempEl.focus();
     },
     submitForm: function submitForm() {
+      var _this2 = this;
       var formData = new FormData();
       formData.append('card_number', this.card_number);
       formData.append('nfc', this.nfc);
-      axios.post('/api/card', formData).then(function (response) {
-        if (response.data === "success") {
-          alert("Карта успешно добавлена");
+      formData.append('qr_code', this.card_number);
+      if (this.card_number !== this.nfc) {
+        axios.post('/api/card', formData).then(function (response) {
+          if (response.data === "success") {
+            document.getElementById("msg").innerText = "Карта успешно добавлена\n" + "Номер карты: " + _this2.card_number + "\nNFC: " + _this2.nfc;
+            setTimeout(function () {
+              document.getElementById("msg").innerText = "";
+            }, 1000);
+          }
+          location.reload();
+        })["catch"](function (error) {
+          if (error.response.status === 400) {
+            alert("Карта не добавлена, перепроверьте данные.");
+            location.reload();
+          }
+        });
+      } else {
+        alert("Вы перепутали что-то");
+        location.reload();
+      }
+    },
+    getStudentName: function getStudentName() {
+      var _this3 = this;
+      // console.log(formData);
+      axios.get("api/student/name", {
+        params: {
+          "card_number": this.card_number
         }
-        location.reload();
+      }).then(function (data) {
+        _this3.student_name = data.data.name;
+        document.getElementById('student_name').value = _this3.student_name;
       })["catch"](function (error) {
-        alert('Карта не добавлена ' + error);
-        location.reload();
+        if (error.response.status === 404) {
+          alert('Номер карты не найдена');
+          location.reload();
+        } else if (error.response.status === 400) {
+          alert('К этой карте никто не зарегистрировано');
+          location.reload();
+        }
       });
     }
   },
@@ -2343,17 +2372,25 @@ var render = function render() {
     }
   }), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_c("label", {
+  }, [_c("label", [_vm._v("Номер карты: ")]), _vm._v(" "), _c("input", {
     staticClass: "mt-3",
     attrs: {
-      "for": ""
+      id: "card_number",
+      type: "number"
     }
-  }, [_vm._v("Номер карты: " + _vm._s(_vm.card_number))]), _vm._v(" "), _c("br"), _vm._v(" "), _c("label", {
+  }), _vm._v(" "), _c("br"), _vm._v(" "), _c("label", [_vm._v("ФИО студента: ")]), _c("input", {
     staticClass: "mt-3",
     attrs: {
-      "for": ""
+      id: "student_name",
+      type: "text"
     }
-  }, [_vm._v("NFC: " + _vm._s(_vm.nfc))]), _vm._v(" "), _c("br"), _vm._v(" "), _c("input", {
+  }), _vm._v(" "), _c("br"), _vm._v(" "), _c("label", [_vm._v("NFC: ")]), _c("input", {
+    staticClass: "mt-3",
+    attrs: {
+      id: "nfc",
+      type: "text"
+    }
+  }), _vm._v(" "), _c("br"), _vm._v(" "), _c("input", {
     attrs: {
       type: "text",
       id: "temp"
@@ -2362,6 +2399,10 @@ var render = function render() {
       blur: function blur($event) {
         return _vm.focusMe();
       }
+    }
+  }), _vm._v(" "), _c("div", {
+    attrs: {
+      id: "msg"
     }
   })])]);
 };
