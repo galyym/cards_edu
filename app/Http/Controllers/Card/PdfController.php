@@ -26,7 +26,7 @@ class PdfController extends Controller
     public function genaratePdfStudent(Request $request){
 
         $query = DB::table('mektep_students')
-            ->select('surname', 'name')
+            ->select('id', 'surname', 'name', 'iin as iinS')
             ->selectRaw('MD5(iin) as iin')
             ->where('id_mektep', $request->id)
             ->get()
@@ -51,7 +51,7 @@ class PdfController extends Controller
     //генерация карточек для учителей
     public function genaratePdfTeacher(Request $request){
         $query = DB::table('mektep_teacher')
-            ->select('surname', 'name')
+            ->select('id', 'surname', 'name', 'iin as iinS')
             ->selectRaw('MD5(iin) as iin')
             ->where('id_mektep', $request->id)
             ->get()
@@ -67,6 +67,31 @@ class PdfController extends Controller
         $count = $last == null?2010000:$last->card_number+1;
         foreach ($clunk as $part){
             PdfFullCards::dispatch($part, $count, $request->id, "teacher")->onQueue('cards');
+            $count = $count + 100;
+        }
+
+        return response('Генерация 100 карточек займет примерно 1 минута, вам придется ждать несколько минут чтобы получить pdf документ');
+    }
+
+    //генерация карточек для персонала
+    public function genaratePdfPersonal(Request $request){
+        $query = DB::table('mektep_personal')
+            ->select('id', 'surname', 'name', 'iin as iinS')
+            ->selectRaw('MD5(iin) as iin')
+            ->where('id_mektep', $request->id)
+            ->get()
+            ->toArray();
+        $clunk = [];
+
+        if (count($query) > 100){
+            $clunk = array_chunk($query, 100);
+        } else {
+            $clunk[] = $query;
+        }
+        $last = $this->getLastNum();
+        $count = $last == null?2010000:$last->card_number+1;
+        foreach ($clunk as $part){
+            PdfFullCards::dispatch($part, $count, $request->id, "personal")->onQueue('cards');
             $count = $count + 100;
         }
 
@@ -91,5 +116,16 @@ class PdfController extends Controller
         }else{
             return $last_num_ready;
         }
+    }
+
+    // проверим на уникальность
+    public function checkDuplicate($iin = null){
+        $query = DB::table("cards_ready")->select("*")->where("iin","=", $iin)->first();
+        return $query;
+//        if ($query){
+//            return $query;
+//        }else{
+//            return false;
+//        }
     }
 }
