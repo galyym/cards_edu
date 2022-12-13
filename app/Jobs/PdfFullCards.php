@@ -60,13 +60,13 @@ class PdfFullCards implements ShouldQueue
         for ($i = 0; $i < count($cards); $i++) {
 
 //            $checkDuplicate = $pdfController->checkDuplicate($cards[$i]->iinS);
-
+//
 //            if (!empty($checkDuplicate)){
 //                DB::table('cards_ready')->insert([
 //                    'full_name' => $cards[$i]->surname.' '.$cards[$i]->name,
 //                    'iin' => $cards[$i]->iinS,
 //                    'user_id' => $cards[$i]->id,
-//                    'card_number' =>  $checkDuplicate->card_number."".$id,
+//                    'card_number' =>  $checkDuplicate->card_number,
 //                    'status' => $status,
 //                    'mektep_id' => $id
 //                ]);
@@ -110,10 +110,10 @@ class PdfFullCards implements ShouldQueue
 //            }
         }
 
-        if(!file_exists(public_path('PDF/Cards/mektepN'.$id.'/'.$status))){
-            mkdir(public_path('PDF/Cards/mektepN'.$id.'/'.$status), 0755, true);
+        if(!file_exists(public_path('PDF/Personal/mektepN'.$id.'/'.$status))){
+            mkdir(public_path('PDF/Personal/mektepN'.$id.'/'.$status), 0755, true);
         }
 
-        $mpdf->Output(public_path('PDF/Cards/mektepN'.$id.'/'.$status.'/'.($count-count($cards)).'-'.$count.'.pdf'), 'F');
+        $mpdf->Output(public_path('PDF/Personal/mektepN'.$id.'/'.$status.'/'.($count-count($cards)).'-'.$count.'.pdf'), 'F');
     }
 }

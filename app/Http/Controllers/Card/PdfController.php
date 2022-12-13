@@ -120,12 +120,11 @@ class PdfController extends Controller
 
     // проверим на уникальность
     public function checkDuplicate($iin = null){
-        $query = DB::table("cards_ready")->select("*")->where("iin","=", $iin)->first();
+        $query = DB::table("cards_ready")
+            ->select("*")
+            ->where("iin","=", $iin)
+            ->orderBy("card_number", 'asc')
+            ->first();
         return $query;
-//        if ($query){
-//            return $query;
-//        }else{
-//            return false;
-//        }
     }
 }
