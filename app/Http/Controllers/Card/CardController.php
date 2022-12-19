@@ -16,7 +16,8 @@ class CardController extends Controller
 
         $query = DB::table('cards_ready')->where('card_number', $request->card_number)->update([
             'nfc'         => $request->nfc,
-            'qr_code'     => $request->qr_code
+            'qr_code'     => $request->qr_code,
+            'rfid'     => $request->rfid,
         ]);
 
         if ($query){

@@ -6,6 +6,8 @@
             <br>
             <label>ФИО студента: </label><input id="student_name" type="text" class="mt-3">
             <br>
+            <label>RFID: </label><input id="rfid" type="text" class="mt-3">
+            <br>
             <label>NFC: </label><input id="nfc" type="text" class="mt-3">
             <br>
             <input type="text" id="temp" @blur="focusMe()">
@@ -15,6 +17,7 @@
 </template>
 
 <script>
+const arr = ["card_number", "rfid"]
 export default {
     name: "CardRegister",
     data: ()=> ({
@@ -23,7 +26,9 @@ export default {
         card_number: null,
         nfc: null,
         tempEl: null,
-        student_name: null
+        student_name: null,
+        rfid: null,
+        element_id: null
     }),
 
     mounted() {
@@ -39,22 +44,29 @@ export default {
 
         myListener(event) {
             if (event.keyCode === 13) {
+
+                this.element_id = arr.shift()
                 this.temp = this.tempEl.value;
-                this.card_number = this.temp;
 
-                document.getElementById('card_number').value = this.card_number
-                this.getStudentName();
-                readNFC(60000, 400, data => {
-                    this.nfc = data.slice(9, 19);
-                    document.getElementById('nfc').value = this.nfc;
+                if (this.element_id === "card_number") {
+                    this.card_number = this.temp
+                    document.getElementById('card_number').value = this.card_number
+                    this.getStudentName();
+                }
+                if (this.element_id === "rfid") {
+                    this.getRfid();
+                }
+                this.tempEl.value = ""
+                this.temp = '';
 
-                    this.tempEl.value = ""
-                    this.temp = '';
+                if (arr.length === 0){
+                    readNFC(60000, 400, data => {
+                        this.nfc = data.slice(9, 19);
+                        document.getElementById('nfc').value = this.nfc;
 
-                    this.submitForm();
-                });
-
-
+                        this.submitForm();
+                    });
+                }
             }
             event.preventDefault();
         },
@@ -68,7 +80,7 @@ export default {
             const formData = new FormData();
             formData.append('card_number', this.card_number);
             formData.append('nfc', this.nfc);
-            formData.append('qr_code', this.card_number);
+            formData.append('rfid', this.rfid);
             if (this.card_number !== this.nfc){
                 axios.post('/api/card', formData)
                     .then(response => {
@@ -117,7 +129,28 @@ export default {
         this.stopInterval();
         this.tempEl.removeEventListener("keyup", this.myListener);
 
-    }
+    },
+
+    getRfid() {
+        if (this.interval) return
+        this.interval = setInterval(() =>{
+            axios.get("http://192.168.31.121:8400/tablerfid:5102:com3")
+                // axios.get("http://127.0.0.1:8400/tablerfid:5102:/dev/ttyUSB0")
+                .then(response => {
+                    console.log(response.data)
+                    this.rfid = response.data;
+                    this.stopInterval();
+                })
+                .catch(error => {
+                    console.log(error.response)
+                })
+        }, 2000)
+    },
+
+    stopInterval(){
+        clearInterval(this.interval);
+    },
+
 }
 </script>
 
