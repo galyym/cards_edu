@@ -48,25 +48,21 @@ export default {
                 this.element_id = arr.shift()
                 this.temp = this.tempEl.value;
 
-                if (this.element_id === "card_number") {
+                // if (this.element_id === "card_number") {
                     this.card_number = this.temp
                     document.getElementById('card_number').value = this.card_number
                     this.getStudentName();
-                }
-                if (this.element_id === "rfid") {
+                // }
+                // if (this.element_id === "rfid") {
                     this.getRfid();
-                }
-                this.tempEl.value = ""
-                this.temp = '';
+                // }
+                // this.tempEl.value = ""
+                // this.temp = '';
+                //
+                // if (arr.length === 0){
 
-                if (arr.length === 0){
-                    readNFC(60000, 400, data => {
-                        this.nfc = data.slice(9, 19);
-                        document.getElementById('nfc').value = this.nfc;
 
-                        this.submitForm();
-                    });
-                }
+                // }
             }
             event.preventDefault();
         },
@@ -123,32 +119,41 @@ export default {
                         location.reload();
                     }
                 })
-        }
+        },
+
+        getRfid() {
+            if (this.interval) return
+            this.interval = setInterval(() =>{
+                // axios.get("http://192.168.31.159:8400/tablerfid:5102:com3")
+                axios.get("http://127.0.0.1:8400/tablerfid:5102:com3")
+                    .then(response => {
+                        console.log(response.data)
+                        this.rfid = response.data;
+                        document.getElementById('rfid').value = this.rfid
+                        this.stopInterval();
+
+                        readNFC(60000, 400, data => {
+                            this.nfc = data.slice(9, 19);
+                            document.getElementById('nfc').value = this.nfc;
+
+                            this.submitForm();
+                        });
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    })
+            }, 2000)
+        },
+
+        stopInterval(){
+            clearInterval(this.interval);
+        },
+
     },
     destroyed() {
         this.stopInterval();
         this.tempEl.removeEventListener("keyup", this.myListener);
 
-    },
-
-    getRfid() {
-        if (this.interval) return
-        this.interval = setInterval(() =>{
-            // axios.get("http://192.168.31.159:8400/tablerfid:5102:com3")
-                axios.get("http://127.0.0.1:8400/tablerfid:5102:/dev/ttyUSB0")
-                .then(response => {
-                    console.log(response.data)
-                    this.rfid = response.data;
-                    this.stopInterval();
-                })
-                .catch(error => {
-                    console.log(error.response)
-                })
-        }, 2000)
-    },
-
-    stopInterval(){
-        clearInterval(this.interval);
     },
 
 }
