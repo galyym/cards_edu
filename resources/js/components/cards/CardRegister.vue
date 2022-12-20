@@ -134,8 +134,8 @@ export default {
     getRfid() {
         if (this.interval) return
         this.interval = setInterval(() =>{
-            axios.get("http://192.168.31.121:8400/tablerfid:5102:com3")
-                // axios.get("http://127.0.0.1:8400/tablerfid:5102:/dev/ttyUSB0")
+            // axios.get("http://192.168.31.159:8400/tablerfid:5102:com3")
+                axios.get("http://127.0.0.1:8400/tablerfid:5102:/dev/ttyUSB0")
                 .then(response => {
                     console.log(response.data)
                     this.rfid = response.data;
